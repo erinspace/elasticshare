@@ -1,7 +1,7 @@
 import json
-from flask import Flask
+from flask import Flask, render_template, jsonify
 
-from aggregate import search, missing_agg_query
+from aggregate import search, missing_agg_query, all_source_counts
 
 app = Flask(__name__)
 
@@ -14,12 +14,18 @@ def hello_world():
     return 'Hello World!'
 
 
-@app.route('/terms')
-def term_query():
-    aggs = missing_agg_query('description')
+@app.route('/data/')
+def get_data():
+    aggs = all_source_counts()
     results = search(SHARE_API_URL, aggs)
 
-    return json.dumps(results, indent=4)
+    return jsonify(results)
+
+
+@app.route('/sources')
+def term_query():
+
+    return render_template('charts.html')
 
 
 if __name__ == '__main__':
